@@ -1,0 +1,32 @@
+@import "tailwindcss";
+@plugin "daisyui";
+* {
+  font-family: "Quicksand", sans-serif;
+}
+
+.scrollC::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+  height: 8px; /* Height of the scrollbar for horizontal scrolling */
+}
+
+.scrollC::-webkit-scrollbar-thumb {
+  background-color: #f49b33; /* Scrollbar thumb color */
+  border-radius: 4px; /* Rounded corners for the scrollbar thumb */
+}
+
+.scrollC::-webkit-scrollbar-track {
+  background-color: #f6f6f6; /* Scrollbar track color */
+}
+
+.error {
+  animation: slide 0.3s ease-in-out;
+}
+
+@keyframes slide {
+  from {
+    transform: translateX(150px);
+  }
+  to {
+    transform: translateX(0px);
+  }
+}
