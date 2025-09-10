@@ -2,26 +2,45 @@ import React, { useState } from 'react'
 import Navbar from '../Navbar/Navbar'
 import { Trash2 } from 'lucide-react';
 
+
 function AddRestaurantss() {
+
+    const resDetailsJson={
+        name:"",
+        description:"",
+        state:"",
+        city:"",
+        address:"",
+        city:"",
+        cordinates:"",
+        openTime:"",
+        closeTime:"",
+        menuItems:[{menu:"",price:""}],
+        totalSeats:"",
+        slotTime:[],
+        image:[]
+    }
+
     //menu
-    const [menu, setMenu] = useState([{ menu: "", price: "" }]);
-
-    // for slot time 
-    const [slotTime,setSlotTime]=useState(["10:20PM"]);
-
+    const [resDetails,setResDetails]=useState(resDetailsJson);
+    
     // for slot time input
     const [slotTimeInput,setSlotTimeInput]=useState("");
 
     // adding the menu
     const handleAddMenu = () => {
-    setMenu([...menu, { menu: "", price: "" }]);
+    setResDetails({
+        ...resDetails,
+        menuItems: [...resDetails.menuItems, {menu: "", price: "" }]
+    });
     };
+
 
     // deleting menu by passing the index
     const handleDeleteMenu = (index) => {
-    const updatedMenu = [...menu];  // copy to avoid direct mutation
+    const updatedMenu = [...resDetails.menuItems];  // copy to avoid direct mutation
     updatedMenu.splice(index, 1);   // remove 1 item at that index
-    setMenu(updatedMenu);
+    setResDetails({...resDetails,menuItems:updatedMenu});
     };
 
 
@@ -33,8 +52,9 @@ function AddRestaurantss() {
 
     // adding the time to the time slot array with proper time AM/PM
     const handleAddTime = () => {
-    
-        let newTimeArray = [...slotTime]; // copy the array
+        
+        console.log("hello")
+        let newTimeArray = [...resDetails.slotTime]; // copy the array
 
         let [hours, minutes] = slotTimeInput.split(":"); // "14:30" → ["14","30"]
         hours = Number(hours);
@@ -46,7 +66,12 @@ function AddRestaurantss() {
         let time = `${hours}:${minutes.toString().padStart(2, "0")} ${period}`;
 
         newTimeArray.push(time);
-        setSlotTime(newTimeArray);
+        setResDetails({
+            ...resDetails,
+            slotTime: newTimeArray   // ✅ only the updated array
+        });
+
+
     };
 
 
@@ -63,6 +88,8 @@ function AddRestaurantss() {
                         className='p-[10px] rounded-[4px] border border-[#ddd] text-[16px]'
                         type="text"
                         name="name"
+                        value={resDetails.name}
+                        onChange={(e)=>setResDetails({...resDetails,name:e.target.value})}
                         required
                         />
                     </div>
@@ -71,6 +98,8 @@ function AddRestaurantss() {
                         <label className='font-semibold text-[16px] text-[#4a4a4a]'>Description</label>
                         <textarea
                         name="description"
+                        value={resDetails.description}
+                        onChange={(e)=>setResDetails({...resDetails,description:e.target.value})}
                         required
                         className='p-[10px] rounded-[4px] border border-[#ddd] text-[16px] min-h-[100px]'
                         />
@@ -82,6 +111,8 @@ function AddRestaurantss() {
                         className='p-[10px] rounded-[4px] border border-[#ddd] text-[16px]'
                         type="text"
                         name="name"
+                        value={resDetails.state}
+                        onChange={(e)=>setResDetails({...resDetails,state:e.target.value})}
                         required
                         />
                     </div>
@@ -92,6 +123,8 @@ function AddRestaurantss() {
                         className='p-[10px] rounded-[4px] border border-[#ddd] text-[16px]'
                         type="text"
                         name="name"
+                        value={resDetails.address}
+                        onChange={(e)=>setResDetails({...resDetails,address:e.target.value})}
                         required
                         />
                     </div>
@@ -102,6 +135,8 @@ function AddRestaurantss() {
                         className='p-[10px] rounded-[4px] border border-[#ddd] text-[16px]'
                         type="text"
                         name="name"
+                        value={resDetails.city}
+                        onChange={(e)=>setResDetails({...resDetails,city:e.target.value})}
                         required
                         />
                     </div>
@@ -112,6 +147,8 @@ function AddRestaurantss() {
                         className='p-[10px] rounded-[4px] border border-[#ddd] text-[16px]'
                         type="text"
                         name="name"
+                        value={resDetails.cordinates}
+                        onChange={(e)=>setResDetails({...resDetails,cordinates:e.target.value})}
                         required
                         />
                     </div>
@@ -124,6 +161,8 @@ function AddRestaurantss() {
                             className='p-[10px] rounded-[4px] border border-[#ddd] text-[16px]'
                             type="text"
                             name="name"
+                            value={resDetails.openTime}
+                            onChange={(e)=>setResDetails({...resDetails,openTime:e.target.value})}
                             required
                             />
                         </div>
@@ -134,6 +173,8 @@ function AddRestaurantss() {
                             className='p-[10px] rounded-[4px] border border-[#ddd] text-[16px]'
                             type="text"
                             name="name"
+                            value={resDetails.closeTime}
+                            onChange={(e)=>setResDetails({...resDetails,closeTime:e.target.value})}
                             required
                             />
                         </div>
@@ -142,13 +183,14 @@ function AddRestaurantss() {
                     {/*start menu Item */}
                     <div className='flex gap-[5px] mb-[10px] w-[100%] flex-col'>
                         <h3 className='text-black font-semibold'>Menu Items</h3>
-                        {menu.map((item,index)=>(
+                        {resDetails.menuItems.map((item,index)=>(
                             <div className='w-[100%] flex gap-2' key={index}>
                                 <input
                                 type="text"
                                 name="item"
                                 placeholder="Item name"
-                                value={item.item}
+                                value={resDetails.menuItems[index].menu}
+                                onChange={()=>handleItemChange(index)}
                                 required
                                 className='p-[10px] rounded-[4px] border border-[#ddd] text-[16px] text-black w-[60%]'
                                 />
@@ -182,6 +224,8 @@ function AddRestaurantss() {
                         className='p-[10px] rounded-[4px] border border-[#ddd] text-[16px]'
                         type="text"
                         name="name"
+                        value={resDetails.totalSeats}
+                        onChange={(e)=>setResDetails({...resDetails,totalSeats:e.target.value})}
                         required
                         />
                     </div>
@@ -189,8 +233,8 @@ function AddRestaurantss() {
                     {/*Start of Slot Timming  */}
                     <div className='flex flex-col gap-[5px]'>
                         <p className='font-semibold text-[16px] text-[#4a4a4a]'>Slot Timing</p>
-                        <div className='px-[10px] py-[5px] rounded-[4px] border border-[#ddd] text-[16px] flex'>
-                            {slotTime.map((item,key)=>(
+                        <div className='px-[10px] py-[5px] rounded-[4px] border border-[#ddd] text-[16px] flex h-[50px]'>
+                            {resDetails.slotTime.map((item,key)=>(
                                 <div className='bg-[#ffffe0] p-[8px] border border-[#ddd] rounded-[3px]' key={key}>
                                     {item}
                                 </div>
