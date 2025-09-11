@@ -70,9 +70,21 @@ function AddRestaurantss() {
             ...resDetails,
             slotTime: newTimeArray   // ✅ only the updated array
         });
-
-
     };
+
+    const handleMenuNameChange=(e,index)=>{
+        let menuItems = resDetails.menuItems;
+        menuItems[index].menu=e.target.value;
+        setResDetails({...resDetails,menuItems:menuItems})
+        console.log(resDetails);
+    }
+
+    const handlePriceChange=(e,index)=>{
+        let menuItems = resDetails.menuItems;
+        menuItems[index].price=e.target.value;
+        setResDetails({...resDetails,menuItems:menuItems})
+        console.log(resDetails);
+    }
 
 
   return (
@@ -159,7 +171,7 @@ function AddRestaurantss() {
                             <label className='font-semibold text-[16px] text-[#4a4a4a]'>Open Time</label>
                             <input
                             className='p-[10px] rounded-[4px] border border-[#ddd] text-[16px]'
-                            type="text"
+                            type="time"
                             name="name"
                             value={resDetails.openTime}
                             onChange={(e)=>setResDetails({...resDetails,openTime:e.target.value})}
@@ -171,7 +183,7 @@ function AddRestaurantss() {
                             <label className='font-semibold text-[16px] text-[#4a4a4a]'>Close Time</label>
                             <input
                             className='p-[10px] rounded-[4px] border border-[#ddd] text-[16px]'
-                            type="text"
+                            type="time"
                             name="name"
                             value={resDetails.closeTime}
                             onChange={(e)=>setResDetails({...resDetails,closeTime:e.target.value})}
@@ -190,7 +202,7 @@ function AddRestaurantss() {
                                 name="item"
                                 placeholder="Item name"
                                 value={resDetails.menuItems[index].menu}
-                                onChange={()=>handleItemChange(index)}
+                                onChange={(e)=>handleMenuNameChange(e,index)}
                                 required
                                 className='p-[10px] rounded-[4px] border border-[#ddd] text-[16px] text-black w-[60%]'
                                 />
@@ -200,6 +212,7 @@ function AddRestaurantss() {
                                 name="price"
                                 placeholder="Price"
                                 value={item.price || ""}
+                                onChange={(e)=>handlePriceChange(e,index)}
                                 required
                                 min="0"
                                 step="0.01"
@@ -265,9 +278,10 @@ function AddRestaurantss() {
                     </div>
 
 
-                    <button
+                    <button onClick={()=>console.log(resDetails)}
                     className='p-[10px] rounded-[4px] border border-[#ddd]  text-[16px] bg-[#F49B33] text-white hover:opacity-70 cursor-pointer'
-                    >Add Restaurant</button>
+                    >Add Restaurant
+                    </button>
                 </div>
                 
 
