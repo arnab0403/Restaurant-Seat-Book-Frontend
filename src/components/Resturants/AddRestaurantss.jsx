@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import Navbar from '../Navbar/Navbar'
 import { Trash2 } from 'lucide-react';
-
+import { addRestaurant } from '../../api/api';
+import Message from '../Resturants/Message'
 
 function AddRestaurantss() {
 
@@ -12,7 +13,7 @@ function AddRestaurantss() {
         city:"",
         address:"",
         city:"",
-        cordinates:"",
+        coordinates:"",
         openTime:"",
         closeTime:"",
         menuItems:[{menu:"",price:""}],
@@ -21,11 +22,14 @@ function AddRestaurantss() {
         image:[]
     }
 
+
     //menu
     const [resDetails,setResDetails]=useState(resDetailsJson);
     
     // for slot time input
     const [slotTimeInput,setSlotTimeInput]=useState("");
+
+    const [message,setMessage]=useState("");
 
     // adding the menu
     const handleAddMenu = () => {
@@ -65,13 +69,14 @@ function AddRestaurantss() {
 
         let time = `${hours}:${minutes.toString().padStart(2, "0")} ${period}`;
 
-        newTimeArray.push(time);
+        newTimeArray.push({time:time,status:"available"});
         setResDetails({
             ...resDetails,
             slotTime: newTimeArray   // ✅ only the updated array
         });
     };
 
+    // handle Menu Input 
     const handleMenuNameChange=(e,index)=>{
         let menuItems = resDetails.menuItems;
         menuItems[index].menu=e.target.value;
@@ -79,6 +84,7 @@ function AddRestaurantss() {
         console.log(resDetails);
     }
 
+    //handle Price of the Menu
     const handlePriceChange=(e,index)=>{
         let menuItems = resDetails.menuItems;
         menuItems[index].price=e.target.value;
@@ -86,10 +92,28 @@ function AddRestaurantss() {
         console.log(resDetails);
     }
 
+    //Handle Add Button
+    const hanldeButton = async ()=>{
+        const result = await addRestaurant(resDetails);
+        console.log(result);
+        if (result.status==="success") {
+            setMessage("Restaurants details updates");
+            setResDetails(resDetailsJson);
+            setTimeout(()=>{
+                setMessage("");
+            },3000)
+        }else{
+            alert("Error");
+        }
+    }
 
   return (
     <>
         <Navbar/>
+        {message && (
+             <Message text={message}/>
+        )}
+       
         <div className='bg-[white] mt-[90px] flex justify-center items-center py-[50px]'>
             <div className='w-[800px] drop-shadow-2xl bg-[white] border border-[#e2e2e2] p-[20px] rounded-[6px] text-[black] '>
                 <h2 className='text-black text-center text-[25px]'>Add Restaurants</h2>
@@ -154,13 +178,13 @@ function AddRestaurantss() {
                     </div>
 
                     <div className='flex flex-col gap-[5px] '>
-                        <label className='font-semibold text-[16px] text-[#4a4a4a]'>Cordinates</label>
+                        <label className='font-semibold text-[16px] text-[#4a4a4a]'>Coordinates</label>
                         <input
                         className='p-[10px] rounded-[4px] border border-[#ddd] text-[16px]'
                         type="text"
                         name="name"
                         value={resDetails.cordinates}
-                        onChange={(e)=>setResDetails({...resDetails,cordinates:e.target.value})}
+                        onChange={(e)=>setResDetails({...resDetails,coordinates:e.target.value})}
                         required
                         />
                     </div>
@@ -247,9 +271,9 @@ function AddRestaurantss() {
                     <div className='flex flex-col gap-[5px]'>
                         <p className='font-semibold text-[16px] text-[#4a4a4a]'>Slot Timing</p>
                         <div className='px-[10px] py-[5px] rounded-[4px] border border-[#ddd] text-[16px] flex h-[50px]'>
-                            {resDetails.slotTime.map((item,key)=>(
-                                <div className='bg-[#ffffe0] p-[8px] border border-[#ddd] rounded-[3px]' key={key}>
-                                    {item}
+                            {resDetails.slotTime.map((item,index)=>(
+                                <div className='bg-[#ffffe0] p-[8px] border border-[#ddd] rounded-[3px]' key={index}>
+                                    {item.time}
                                 </div>
                             ))}
                         </div>
@@ -278,7 +302,7 @@ function AddRestaurantss() {
                     </div>
 
 
-                    <button onClick={()=>console.log(resDetails)}
+                    <button onClick={hanldeButton}
                     className='p-[10px] rounded-[4px] border border-[#ddd]  text-[16px] bg-[#F49B33] text-white hover:opacity-70 cursor-pointer'
                     >Add Restaurant
                     </button>

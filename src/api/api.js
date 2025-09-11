@@ -600,8 +600,9 @@ export const verifyOtpSignUp = async (email,otp)=>{
 
 export const addRestaurant = async(restaurant)=>{
   try {
-    const response = axios.post("http://localhost:3000/api/restaurant/add",restaurant);
-    return (await response).data;
+    const response = await axios.post("http://localhost:3000/api/restaurant/add",restaurant);
+    console.log(response.data);
+    return response.data;
   } catch (error) {
     return error;
   }
