@@ -72,17 +72,18 @@ export const sendOtpRequest = async (email, otp) => {
 //   }
 // };
 
-export const getRestaurants = () => {
-  const endpoint = "http://localhost:8090/admin/resall";
 
-  try {
-    const response = axios.get(endpoint);
-    return response;
-  } catch (error) {
-    console.log(error);
-    return error;
-  }
-};
+// export const getRestaurants = () => {
+//   const endpoint = "http://localhost:8090/admin/resall";
+
+//   try {
+//     const response = axios.get(endpoint);
+//     return response;
+//   } catch (error) {
+//     console.log(error);
+//     return error;
+//   }
+// };
 
 export const getRestaurantsById = async (id) => {
   const endpoint = `http://localhost:8090/admin/restaurant/${id}`;
@@ -602,6 +603,15 @@ export const addRestaurant = async(restaurant)=>{
   try {
     const response = await axios.post("http://localhost:3000/api/restaurant/add",restaurant);
     console.log(response.data);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+}
+
+export const getAllRestaurants = async()=>{
+  try {
+    const response = await axios.get("http://localhost:3000/api/restaurant/");
     return response.data;
   } catch (error) {
     return error;

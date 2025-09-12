@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState,useRef } from 'react'
 import Navbar from '../Navbar/Navbar'
-import { Trash2 } from 'lucide-react';
+import { Loader, LoaderCircle, Trash2 } from 'lucide-react';
 import { addRestaurant } from '../../api/api';
 import Message from '../Resturants/Message'
+import axios from 'axios';
+import Error from '../SignUp/Error';
 
 function AddRestaurantss() {
 
@@ -29,7 +31,19 @@ function AddRestaurantss() {
     // for slot time input
     const [slotTimeInput,setSlotTimeInput]=useState("");
 
+    // success message
     const [message,setMessage]=useState("");
+
+    const [error,setError]=useState("");
+
+    const [image,setImage]=useState("");
+
+    const [imageLoading,setImageLoading]=useState(false);
+
+    const [resUploadLoading,setResUploadLoading]=useState(false);
+
+    const fileInputRef=useRef(null); 
+
 
     // adding the menu
     const handleAddMenu = () => {
@@ -80,7 +94,7 @@ function AddRestaurantss() {
     const handleMenuNameChange=(e,index)=>{
         let menuItems = resDetails.menuItems;
         menuItems[index].menu=e.target.value;
-        setResDetails({...resDetails,menuItems:menuItems})
+        setResDetails({...resDetails,menuItems:menuItems});
         console.log(resDetails);
     }
 
@@ -94,10 +108,14 @@ function AddRestaurantss() {
 
     //Handle Add Button
     const hanldeButton = async ()=>{
+        if (resUploadLoading) {
+            return;
+        }
+        setResUploadLoading(true);
         const result = await addRestaurant(resDetails);
         console.log(result);
         if (result.status==="success") {
-            setMessage("Restaurants details updates");
+            setMessage("Restaurants Details Uploaded Successfully");
             setResDetails(resDetailsJson);
             setTimeout(()=>{
                 setMessage("");
@@ -105,6 +123,57 @@ function AddRestaurantss() {
         }else{
             alert("Error");
         }
+        setResUploadLoading(false);
+    }
+
+    // handle the image input field
+    const handleImageChange = async (e)=>{
+
+        if (imageLoading) {
+            return;
+        }
+
+        setImageLoading(true);
+
+        const selectedFile = e.target.files[0];
+        setImage(selectedFile);
+        console.log(selectedFile); 
+
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        formData.append("upload_preset", "restaurants"); 
+        formData.append("folder", "images");             
+
+        try {
+        const res = await axios.post(
+            "https://api.cloudinary.com/v1_1/djlwmlrnz/image/upload",
+            formData
+        );
+
+        let imageArray=resDetails.image;
+        imageArray.push(res.data.secure_url);
+        setResDetails({...resDetails,image:imageArray});
+        setImage(null);
+
+        e.target.value="";
+
+        setImageLoading(false)
+        } catch (err) {
+        console.error(err);
+        alert("Upload failed");
+        setImageLoading(false);
+        }
+    }
+
+    const handleIamgeUploadButton=()=>{
+         if (resDetails.image.length > 4) {
+            setError("Maximum Images Uploaded");
+            setTimeout(()=>{
+                setError("");
+            },3000)
+            return;
+        }
+        fileInputRef.current.click();
     }
 
   return (
@@ -112,6 +181,9 @@ function AddRestaurantss() {
         <Navbar/>
         {message && (
              <Message text={message}/>
+        )}
+        {error && (
+            <Error text={error}/>
         )}
        
         <div className='bg-[white] mt-[90px] flex justify-center items-center py-[50px]'>
@@ -291,20 +363,36 @@ function AddRestaurantss() {
 
                     <div className='flex flex-col gap-[5px] '>
                         <label className='font-semibold text-[16px] text-[#4a4a4a]'>Pictues</label>
+                        <div className='flex gap-1'>
+                            {resDetails.image.map((imageUrl,index)=>{
+                                return <img src={imageUrl} alt="Restaurant Image" key={index} className='max-w-[13%] h-auto object-contain'/>
+                            })}
+                        </div>
                         <input
-                        className='p-[10px] rounded-[4px] border border-[#ddd] text-[16px]'
+                        className='p-[10px] rounded-[4px] border border-[#ddd] text-[16px] hidden'
                         type="file"
                         name="name"
                         accept='image/*'
+                        onChange={handleImageChange}
+                        ref={fileInputRef}
                         required
                         />
+                        <button onClick={handleIamgeUploadButton}  className='p-[10px] rounded-[4px] flex justify-center items-center border border-[#ddd]  text-[16px] bg-[black] text-white hover:opacity-70 cursor-pointer'>
+                            {!imageLoading && <p>Upload Picture</p>}
+                            
+                            {imageLoading && (<LoaderCircle className=' animate-spin'/>)}
+                        </button>
                         <small>Maximum 5 photos</small>
                     </div>
 
 
                     <button onClick={hanldeButton}
-                    className='p-[10px] rounded-[4px] border border-[#ddd]  text-[16px] bg-[#F49B33] text-white hover:opacity-70 cursor-pointer'
-                    >Add Restaurant
+                    className='p-[10px] rounded-[4px] border border-[#ddd] flex justify-center items-center text-[16px] bg-[#F49B33] text-white hover:opacity-70 cursor-pointer'
+                    >
+                        {!resUploadLoading && <p>Add Restaurant</p>}
+                        
+
+                        {resUploadLoading && <LoaderCircle className=' animate-spin'/>}
                     </button>
                 </div>
                 

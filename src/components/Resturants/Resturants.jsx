@@ -2,21 +2,19 @@ import Footer from "../Footer/Footer";
 import { MapPinned } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { getRestaurants } from "../../api/api";
-import Cookies from "universal-cookie";
+import { getAllRestaurants } from "../../api/api";
 
 function Resturants() {
   const navigate = useNavigate();
-  const [restaurant, setRestaurant] = useState(null);
+  const [restaurant, setRestaurant] = useState([]);
   useEffect(() => {
     const getRes = async () => {
-      const response = await getRestaurants();
+      const response = await getAllRestaurants();
       console.log(response);
-      setRestaurant(response.data);
+      setRestaurant( response.restaurants);
     };
     getRes();
   }, []);
-  const restaurantArray = restaurant ? Object.entries(restaurant) : [];
 
   return (
     <>
@@ -28,33 +26,31 @@ function Resturants() {
             </h1>
           </div>
           <div className="flex flex-wrap gap-[25px]">
-            {restaurantArray.map(([id, details]) => (
+           
+            {restaurant.map((restaurant,id) => (
               <div
                 key={id}
                 className="w-[300px] flex flex-col gap-1 mt-4 p-[15px] rounded-[5px] cursor-pointer hover:shadow-2xl transition-all duration-300"
                 onClick={() => {
-                  navigate(`resturants/${details.id}`);
+                  navigate(`resturants/${restaurant._id}`);
                 }}
               >
                 <img
                   className="rounded-[4px] h-[180px] object-contain"
-                  src={`http://localhost:8090/photos/${details.photos.slice(
-                    0,
-                    1
-                  )}`}
-                  alt={details.name}
+                  src={`${restaurant.image[0]}`}
+                  alt={restaurant.name}
                 />
-                <h1 className="text-[18px] font-bold">{details.name}</h1>
-                <p className="text-[12px] text-[#5E5E5E]">{details.place}</p>
+                <h1 className="text-[18px] font-bold">{restaurant.name}</h1>
+                <p className="text-[12px] text-[#5E5E5E]">{restaurant.city}</p>
                 <p className="text-[12px] text-[#5E5E5E]">
-                  <span className="font-bold">{details.openTime}</span>
+                  <span className="font-bold">{restaurant.openTime} - {restaurant.closeTime}</span>
                 </p>
                 <div className="flex gap-2.5">
-                  {details.slotTimes?.slice(0, 3).map((slot, index) => (
+                  {restaurant.slotTime?.slice(0, 3).map((slot, index) => (
                     <div
                       key={index}
                       className={`h-[40px] w-[70px] ${
-                        slot.available ? "bg-[#F49B33]" : "bg-[#5E5E5E]"
+                        slot.status="available" ? "bg-[#F49B33]" : "bg-[#5E5E5E]"
                       } rounded-[5px] flex justify-center items-center cursor-pointer`}
                     >
                       <p className="text-white">{slot.time}</p>{" "}
